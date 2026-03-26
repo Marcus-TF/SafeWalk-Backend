@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: safewalk-postgres
+    environment:
+      POSTGRES_DB: safewalk
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - safewalk-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: safewalk-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/safewalk
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      JWT_SECRET: safewalk-secret-key-2024-ultra-secure
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - safewalk-network
+
+volumes:
+  postgres_data:
+
+networks:
+  safewalk-network:
+    driver: bridge
