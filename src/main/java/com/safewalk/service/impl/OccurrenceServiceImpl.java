@@ -41,7 +41,7 @@ public class OccurrenceServiceImpl implements OccurrenceService {
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .location(request.getLocation())
-                .risk(RiskLevelEnum.fromDescricao(request.getRisk().toUpperCase()))
+                .risk(RiskLevelEnum.fromDescricao(request.getRisk()))
                 .user(user)
                 .anonymous(request.getAnonymous())
                 .build();
@@ -91,23 +91,25 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     }
 
     @Override
-    public OccurrenceResponse update(@Valid OccurrenceRequest request, Long id) {
-        occurrenceRepository.findById(id)
+    @Transactional
+    public OccurrenceResponse update(Long id, OccurrenceRequest request, Long userId) {
+
+        Occurrence occurrence = occurrenceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ocorrência não encontrada"));
 
+        if (!occurrence.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("Sem permissão");
+        }
 
-        Occurrence occurrence = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescricao(request.getType()))
-                .description(request.getDescription())
-                .latitude(request.getLatitude())
-                .longitude(request.getLongitude())
-                .location(request.getLocation())
-                .risk(RiskLevelEnum.fromDescricao(request.getRisk().toUpperCase()))
-                .anonymous(request.getAnonymous())
-                .build();
+        occurrence.setType(OccurrenceEnum.fromDescricao(request.getType()));
+        occurrence.setDescription(request.getDescription());
+        occurrence.setLocation(request.getLocation());
+        occurrence.setRisk(RiskLevelEnum.fromDescricao(request.getRisk()));
+        occurrence.setAnonymous(request.getAnonymous());
 
-       occurrenceRepository.save(occurrence);
-       return mapToResponse(occurrence);
+        occurrence = occurrenceRepository.save(occurrence);
+
+        return mapToResponse(occurrence);
     }
 
     private OccurrenceResponse mapToResponse(Occurrence occurrence) {

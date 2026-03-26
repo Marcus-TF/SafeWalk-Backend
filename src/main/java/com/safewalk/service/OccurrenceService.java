@@ -17,5 +17,5 @@ public interface OccurrenceService {
 
     void delete(Long id, Long userId);
 
-    OccurrenceResponse update(@Valid OccurrenceRequest request, Long id);
+    OccurrenceResponse update(Long id, OccurrenceRequest request, Long userId);
 }

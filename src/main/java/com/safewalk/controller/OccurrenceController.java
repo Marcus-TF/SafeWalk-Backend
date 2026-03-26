@@ -37,7 +37,6 @@ public class OccurrenceController {
     @GetMapping("/my")
     public ResponseEntity<List<OccurrenceResponse>> findMy(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         List<OccurrenceResponse> occurrences = occurrenceService.findByUserId(userPrincipal.getId());
-        System.out.println("CHEGOU:" + occurrences);
         return ResponseEntity.ok(occurrences);
     }
 
@@ -55,10 +54,11 @@ public class OccurrenceController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping
-    public ResponseEntity<OccurrenceResponse> update(@Valid @RequestBody OccurrenceRequest request,
+    @PutMapping("/{id}")
+    public ResponseEntity<OccurrenceResponse> update(@PathVariable Long id,
+                                                     @Valid @RequestBody OccurrenceRequest request,
                                                      @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        OccurrenceResponse response = occurrenceService.update(request, userPrincipal.getId());
+        OccurrenceResponse response = occurrenceService.update(id, request, userPrincipal.getId());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
