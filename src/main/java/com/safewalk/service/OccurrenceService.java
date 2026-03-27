@@ -2,7 +2,6 @@ package com.safewalk.service;
 
 import com.safewalk.dto.OccurrenceRequest;
 import com.safewalk.dto.OccurrenceResponse;
-import jakarta.validation.Valid;
 
 import java.util.List;
 

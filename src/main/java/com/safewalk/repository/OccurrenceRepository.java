@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface OccurrenceRepository extends JpaRepository<Occurrence, Long> {
     List<Occurrence> findByUserId(Long userId);
+
     List<Occurrence> findByRisk(RiskLevelEnum risk);
+
     List<Occurrence> findAllByOrderByCreatedAtDesc();
 }

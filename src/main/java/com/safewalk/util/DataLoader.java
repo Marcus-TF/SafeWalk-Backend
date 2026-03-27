@@ -1,9 +1,9 @@
 package com.safewalk.util;
 
 import com.safewalk.model.Occurrence;
+import com.safewalk.model.User;
 import com.safewalk.model.enums.OccurrenceEnum;
 import com.safewalk.model.enums.RiskLevelEnum;
-import com.safewalk.model.User;
 import com.safewalk.repository.OccurrenceRepository;
 import com.safewalk.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
