@@ -1,9 +1,9 @@
 package com.safewalk.util;
 
 import com.safewalk.model.Occurrence;
+import com.safewalk.model.User;
 import com.safewalk.model.enums.OccurrenceEnum;
 import com.safewalk.model.enums.RiskLevelEnum;
-import com.safewalk.model.User;
 import com.safewalk.repository.OccurrenceRepository;
 import com.safewalk.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +37,8 @@ public class DataLoader implements CommandLineRunner {
                 .build();
 
         User maria = User.builder()
-                .name("Maria Santos")
-                .email("maria@test.com")
+                .name("Marcus Túlio")
+                .email("Marcust.mpf@gmail.com")
                 .password(passwordEncoder.encode("123456"))
                 .build();
 
