@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -34,11 +35,27 @@ public class User {
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
+
+    @Column(name = "NOTIFY_HIGH", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean notifyHigh;
+
+    @Column(name = "NOTIFY_MEDIUM", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean notifyMedium;
+
+    @Column(name = "NOTIFY_LOW", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean notifyLow;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Occurrence> occurrences;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+
+        if (notifyHigh == null) notifyHigh = false;
+        if (notifyMedium == null) notifyMedium = false;
+        if (notifyLow == null) notifyLow = false;
     }
     
     @PreUpdate

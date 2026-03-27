@@ -11,7 +11,6 @@ import com.safewalk.model.enums.RiskLevelEnum;
 import com.safewalk.repository.OccurrenceRepository;
 import com.safewalk.repository.UserRepository;
 import com.safewalk.service.OccurrenceService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +27,8 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     private final UserRepository userRepository;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    @Transactional
     @Override
+    @Transactional
     public OccurrenceResponse create(OccurrenceRequest request, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
@@ -51,8 +50,8 @@ public class OccurrenceServiceImpl implements OccurrenceService {
         return mapToResponse(occurrence);
     }
 
-    @Transactional
     @Override
+    @Transactional(readOnly = true)
     public List<OccurrenceResponse> findAll() {
         return occurrenceRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
@@ -60,8 +59,8 @@ public class OccurrenceServiceImpl implements OccurrenceService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
+    @Transactional(readOnly = true)
     public List<OccurrenceResponse> findByUserId(Long userId) {
         return occurrenceRepository.findByUserId(userId)
                 .stream()
@@ -69,16 +68,16 @@ public class OccurrenceServiceImpl implements OccurrenceService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
+    @Transactional(readOnly = true)
     public OccurrenceResponse findById(Long id) {
         Occurrence occurrence = occurrenceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ocorrência não encontrada"));
         return mapToResponse(occurrence);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void delete(Long id, Long userId) {
         Occurrence occurrence = occurrenceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ocorrência não encontrada"));
