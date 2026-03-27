@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(Long id, UserUpdateRequest request) {
-        User user = userRepository.findById(id).orElseThrow(() ->new ResourceNotFoundException("Usuário não encontrado"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() ->new ResourceNotFoundException("Usuário não encontrado"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         if (!user.getId().equals(id)) {
             throw new UnauthorizedException("Você não tem permissão para deletar este Usuario");

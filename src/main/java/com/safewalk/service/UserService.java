@@ -5,7 +5,7 @@ import com.safewalk.dto.UserUpdateRequest;
 
 public interface UserService {
 
-    UserResponse findById(Long  userId);
+    UserResponse findById(Long userId);
 
     void update(Long id, UserUpdateRequest request);
 

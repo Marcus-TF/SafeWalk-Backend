@@ -2,7 +2,6 @@ package com.safewalk.controller;
 
 import com.safewalk.dto.UserResponse;
 import com.safewalk.dto.UserUpdateRequest;
-import com.safewalk.model.User;
 import com.safewalk.security.UserPrincipal;
 import com.safewalk.service.UserService;
 import lombok.RequiredArgsConstructor;
