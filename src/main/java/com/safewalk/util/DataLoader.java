@@ -37,8 +37,8 @@ public class DataLoader implements CommandLineRunner {
                 .build();
 
         User maria = User.builder()
-                .name("Maria Santos")
-                .email("maria@test.com")
+                .name("Marcus Túlio")
+                .email("Marcust.mpf@gmail.com")
                 .password(passwordEncoder.encode("123456"))
                 .build();
 
