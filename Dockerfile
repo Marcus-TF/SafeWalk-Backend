@@ -1,16 +1,18 @@
-FROM ubuntu:latest AS BUILD
+# ===== BUILD =====
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
+WORKDIR /app
 COPY . .
 
-RUN apt-get install maven -y
-RUN mvn clean install
+RUN mvn clean package -DskipTests
 
-FROM openjdk:17-jdk-slim
+# ===== RUN =====
+FROM eclipse-temurin:17-jdk-jammy
+
+WORKDIR /app
+
+COPY --from=build /app/target/safewalk-1.0.0.jar app.jar
 
 EXPOSE 8080
-
-COPY --from=BUILD /target/safewalk-1.0.0.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
