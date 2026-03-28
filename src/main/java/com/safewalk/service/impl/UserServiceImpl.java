@@ -10,6 +10,7 @@ import com.safewalk.repository.PasswordResetTokenRepository;
 import com.safewalk.repository.UserRepository;
 import com.safewalk.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Value("${front.url}")
+    private String frontUrl;
 
     @Override
     @Transactional(readOnly = true)
@@ -83,7 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void sendEmail(String to, String token) {
-        String link = "http://localhost:5173/reset-password?token=" + token;
+        String link = frontUrl + "/reset-password?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
