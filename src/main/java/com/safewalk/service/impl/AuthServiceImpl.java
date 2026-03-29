@@ -55,6 +55,9 @@ public class AuthServiceImpl implements AuthService {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .notifyHigh(user.getNotifyHigh())
+                .notifyMedium(user.getNotifyMedium())
+                .notifyLow(user.getNotifyLow())
                 .build();
 
         return AuthResponse.builder()
