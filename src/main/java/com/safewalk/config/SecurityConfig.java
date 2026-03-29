@@ -1,6 +1,7 @@
 package com.safewalk.config;
 
 import com.safewalk.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,19 @@ public class SecurityConfig {
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore((request, response, chain) -> {
+                    HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+                    String path = httpRequest.getServletPath();
+
+                    if (path.startsWith("/api/auth") || path.startsWith("/api/password")) {
+                        chain.doFilter(request, response);
+                        return;
+                    }
+
+                    jwtAuthenticationFilter.doFilter(request, response, chain);
+
+                }, UsernamePasswordAuthenticationFilter.class);
 
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
