@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
     public void requestReset(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         String token = UUID.randomUUID().toString();
 
