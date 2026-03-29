@@ -11,12 +11,14 @@ import com.safewalk.repository.UserRepository;
 import com.safewalk.security.JwtUtil;
 import com.safewalk.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -30,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
             throw new EmailAlreadyExistsException("Este e-mail já está cadastrado");
         }
 
+        log.info("Request for SingUp: {}", request);
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
