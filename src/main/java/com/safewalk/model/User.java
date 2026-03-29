@@ -36,14 +36,17 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "NOTIFY_HIGH", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean notifyHigh;
+    @Builder.Default
+    @Column(name = "NOTIFY_HIGH", nullable = false)
+    private Boolean notifyHigh = false;
 
-    @Column(name = "NOTIFY_MEDIUM", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean notifyMedium;
+    @Builder.Default
+    @Column(name = "NOTIFY_MEDIUM", nullable = false)
+    private Boolean notifyMedium = false;
 
-    @Column(name = "NOTIFY_LOW", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean notifyLow;
+    @Builder.Default
+    @Column(name = "NOTIFY_LOW", nullable = false)
+    private Boolean notifyLow = false;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Occurrence> occurrences;
@@ -52,10 +55,6 @@ public class User {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-
-        if (notifyHigh == null) notifyHigh = false;
-        if (notifyMedium == null) notifyMedium = false;
-        if (notifyLow == null) notifyLow = false;
     }
 
     @PreUpdate
