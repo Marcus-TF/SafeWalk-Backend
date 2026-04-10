@@ -61,7 +61,7 @@ public class Occurrence {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         if (isActive == null) {
-            isActive = false;
+            isActive = true;
         }
     }
 

@@ -56,7 +56,7 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     @Override
     @Transactional(readOnly = true)
     public List<OccurrenceResponse> findAll() {
-        return occurrenceRepository.findAllByIsActiveTrueOrderByCreatedAtDesc()
+        return occurrenceRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -167,7 +167,7 @@ public class OccurrenceServiceImpl implements OccurrenceService {
                 }
             }
 
-            if (cluster.size() >= 3) {
+            if (cluster.size() >= 5) {
                 hotspots.add(buildHotspot(cluster));
             }
         }
