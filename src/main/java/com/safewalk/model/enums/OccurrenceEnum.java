@@ -4,34 +4,34 @@ import lombok.Getter;
 
 @Getter
 public enum OccurrenceEnum {
-    ASSALTO("Assalto"),
-    FURTO("Furto"),
-    ROUBO_DE_VEICULO("Roubo de Veículo"),
-    VANDALISMO("Vandalismo"),
-    PESSOA_SUSPEITA("Pessoa Suspeita"),
-    ILUMINACAO_PRECARIA("Iluminação Precária"),
-    AREA_DESERTA("Área Deserta"),
-    OUTRO("Outro");
+    ROBBERY("Assalto"),
+    THEFT("Furto"),
+    VEHICLE_THEFT("Roubo de Veículo"),
+    VANDALISM("Vandalismo"),
+    SUSPICIOUS_PERSON("Pessoa Suspeita"),
+    POOR_LIGHTING("Iluminação Precária"),
+    DESERTED_AREA("Área Deserta"),
+    OTHER("Outro");
 
-    private final String descricao;
+    private final String description;
 
-    OccurrenceEnum(String descricao) {
-        this.descricao = descricao;
+    OccurrenceEnum(String description) {
+        this.description = description;
     }
 
-    public static OccurrenceEnum fromDescricao(String descricao) {
-        if (descricao == null || descricao.isBlank()) {
+    public static OccurrenceEnum fromDescription(String description) {
+        if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("Tipo da ocorrência não informado");
         }
 
-        String normalizado = descricao.trim().toLowerCase();
+        String normalized = description.trim().toLowerCase();
 
         for (OccurrenceEnum value : OccurrenceEnum.values()) {
-            if (value.getDescricao().toLowerCase().equals(normalizado)) {
+            if (value.getDescription().toLowerCase().equals(normalized)) {
                 return value;
             }
         }
 
-        throw new IllegalArgumentException("Tipo inválido: " + descricao);
+        throw new IllegalArgumentException("Tipo inválido: " + description);
     }
 }

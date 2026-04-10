@@ -10,12 +10,12 @@ public class OccurrenceEnumConverter implements AttributeConverter<OccurrenceEnu
     @Override
     public String convertToDatabaseColumn(OccurrenceEnum attribute) {
         if (attribute == null) return null;
-        return attribute.getDescricao();
+        return attribute.getDescription();
     }
 
     @Override
     public OccurrenceEnum convertToEntityAttribute(String dbData) {
         if (dbData == null) return null;
-        return OccurrenceEnum.fromDescricao(dbData);
+        return OccurrenceEnum.fromDescription(dbData);
     }
 }
