@@ -4,29 +4,29 @@ import lombok.Getter;
 
 @Getter
 public enum RiskLevelEnum {
-    BAIXO("Baixo"),
-    MEDIO("Médio"),
-    ALTO("Alto");
+    LOW("Baixo"),
+    MEDIUM("Médio"),
+    HIGH("Alto");
 
-    private final String descricao;
+    private final String description;
 
-    RiskLevelEnum(String descricao) {
-        this.descricao = descricao;
+    RiskLevelEnum(String description) {
+        this.description = description;
     }
 
-    public static RiskLevelEnum fromDescricao(String descricao) {
-        if (descricao == null || descricao.isBlank()) {
+    public static RiskLevelEnum fromDescription(String description) {
+        if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("Tipo do risco não informado");
         }
 
-        String normalizado = descricao.trim().toLowerCase();
+        String normalized = description.trim().toLowerCase();
 
         for (RiskLevelEnum value : RiskLevelEnum.values()) {
-            if (value.getDescricao().toLowerCase().equals(normalizado)) {
+            if (value.getDescription().toLowerCase().equals(normalized)) {
                 return value;
             }
         }
 
-        throw new IllegalArgumentException("Risco inválido: " + descricao);
+        throw new IllegalArgumentException("Risco inválido: " + description);
     }
 }

@@ -1,5 +1,6 @@
 package com.safewalk.service.impl;
 
+import com.safewalk.dto.HotspotDTO;
 import com.safewalk.dto.OccurrenceRequest;
 import com.safewalk.dto.OccurrenceResponse;
 import com.safewalk.exception.ResourceNotFoundException;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,12 +38,12 @@ public class OccurrenceServiceImpl implements OccurrenceService {
 
 
         Occurrence occurrence = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescricao(request.getType()))
+                .type(OccurrenceEnum.fromDescription(request.getType()))
                 .description(request.getDescription())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .location(request.getLocation())
-                .risk(RiskLevelEnum.fromDescricao(request.getRisk()))
+                .risk(RiskLevelEnum.fromDescription(request.getRisk()))
                 .user(user)
                 .anonymous(request.getAnonymous())
                 .build();
@@ -100,10 +103,10 @@ public class OccurrenceServiceImpl implements OccurrenceService {
             throw new UnauthorizedException("Sem permissão");
         }
 
-        occurrence.setType(OccurrenceEnum.fromDescricao(request.getType()));
+        occurrence.setType(OccurrenceEnum.fromDescription(request.getType()));
         occurrence.setDescription(request.getDescription());
         occurrence.setLocation(request.getLocation());
-        occurrence.setRisk(RiskLevelEnum.fromDescricao(request.getRisk()));
+        occurrence.setRisk(RiskLevelEnum.fromDescription(request.getRisk()));
         occurrence.setAnonymous(request.getAnonymous());
 
         occurrence = occurrenceRepository.save(occurrence);
@@ -114,15 +117,92 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     private OccurrenceResponse mapToResponse(Occurrence occurrence) {
         return OccurrenceResponse.builder()
                 .id(occurrence.getId())
-                .type(occurrence.getType().getDescricao())
+                .type(occurrence.getType().getDescription())
                 .description(occurrence.getDescription())
                 .latitude(occurrence.getLatitude())
                 .longitude(occurrence.getLongitude())
                 .location(occurrence.getLocation())
-                .risk(occurrence.getRisk().getDescricao())
+                .risk(occurrence.getRisk().getDescription())
                 .userId(occurrence.getUser().getId())
                 .userName(occurrence.getAnonymous() ? "Anônimo" : occurrence.getUser().getName())
                 .createdAt(occurrence.getCreatedAt().format(FORMATTER))
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<HotspotDTO> getHotspots() {
+        List<OccurrenceResponse> allResponses = findAll();
+        List<HotspotDTO> hotspots = new ArrayList<>();
+        List<OccurrenceResponse> available = new ArrayList<>(allResponses);
+
+        while (!available.isEmpty()) {
+            OccurrenceResponse current = available.remove(0);
+            List<OccurrenceResponse> cluster = new ArrayList<>();
+            cluster.add(current);
+
+            Iterator<OccurrenceResponse> iter = available.iterator();
+            while (iter.hasNext()) {
+                OccurrenceResponse other = iter.next();
+                if (haversineDistance(current.getLatitude(), current.getLongitude(),
+                        other.getLatitude(), other.getLongitude()) <= 0.2) {
+                    cluster.add(other);
+                    iter.remove();
+                }
+            }
+
+            if (cluster.size() >= 3) {
+                hotspots.add(buildHotspot(cluster));
+            }
+        }
+
+        return hotspots;
+    }
+
+    private HotspotDTO buildHotspot(List<OccurrenceResponse> cluster) {
+        double sumLat = 0;
+        double sumLon = 0;
+        int countHigh = 0;
+        int countMedium = 0;
+        int countLow = 0;
+
+        for (OccurrenceResponse occ : cluster) {
+            sumLat += occ.getLatitude();
+            sumLon += occ.getLongitude();
+
+            if ("Alto".equalsIgnoreCase(occ.getRisk())) {
+                countHigh++;
+            } else if ("Médio".equalsIgnoreCase(occ.getRisk())) {
+                countMedium++;
+            } else {
+                countLow++;
+            }
+        }
+
+        String dominantRisk = "Baixo";
+        if (countHigh >= countMedium && countHigh >= countLow) {
+            dominantRisk = "Alto";
+        } else if (countMedium >= countLow) {
+            dominantRisk = "Médio";
+        }
+
+        return HotspotDTO.builder()
+                .id((long) cluster.hashCode()) 
+                .latitude(sumLat / cluster.size())
+                .longitude(sumLon / cluster.size())
+                .risk(dominantRisk)
+                .occurrencesList(cluster)
+                .build();
+    }
+
+    private double haversineDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; 
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 }

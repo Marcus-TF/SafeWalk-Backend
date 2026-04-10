@@ -1,5 +1,6 @@
 package com.safewalk.controller;
 
+import com.safewalk.dto.HotspotDTO;
 import com.safewalk.dto.OccurrenceRequest;
 import com.safewalk.dto.OccurrenceResponse;
 import com.safewalk.security.UserPrincipal;
@@ -60,5 +61,10 @@ public class OccurrenceController {
                                                      @AuthenticationPrincipal UserPrincipal userPrincipal) {
         OccurrenceResponse response = occurrenceService.update(id, request, userPrincipal.getId());
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    @GetMapping("/hotspots")
+    public ResponseEntity<List<HotspotDTO>> getHotspots() {
+        List<HotspotDTO> hotspots = occurrenceService.getHotspots();
+        return ResponseEntity.ok(hotspots);
     }
 }
