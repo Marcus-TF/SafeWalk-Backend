@@ -20,4 +20,6 @@ public interface OccurrenceService {
     OccurrenceResponse update(Long id, OccurrenceRequest request, Long userId);
 
     List<HotspotDTO> getHotspots();
+
+    OccurrenceResponse validateOccurrence(Long id);
 }

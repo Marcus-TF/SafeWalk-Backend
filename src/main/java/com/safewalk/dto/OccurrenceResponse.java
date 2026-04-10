@@ -20,4 +20,5 @@ public class OccurrenceResponse {
     private Long userId;
     private String userName;
     private String createdAt;
+    private boolean isActive;
 }

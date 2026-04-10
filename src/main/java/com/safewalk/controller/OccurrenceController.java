@@ -67,4 +67,10 @@ public class OccurrenceController {
         List<HotspotDTO> hotspots = occurrenceService.getHotspots();
         return ResponseEntity.ok(hotspots);
     }
+
+    @PatchMapping("/{id}/validate")
+    public ResponseEntity<OccurrenceResponse> validate(@PathVariable Long id) {
+        OccurrenceResponse response = occurrenceService.validateOccurrence(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

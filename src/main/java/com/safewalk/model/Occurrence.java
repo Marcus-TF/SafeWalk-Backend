@@ -53,10 +53,16 @@ public class Occurrence {
     @Column(nullable = false)
     private Boolean anonymous;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean isActive;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (isActive == null) {
+            isActive = false;
+        }
     }
 
     @PreUpdate

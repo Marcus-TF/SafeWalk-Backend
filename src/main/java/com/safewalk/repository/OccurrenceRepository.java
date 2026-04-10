@@ -14,4 +14,6 @@ public interface OccurrenceRepository extends JpaRepository<Occurrence, Long> {
     List<Occurrence> findByRisk(RiskLevelEnum risk);
 
     List<Occurrence> findAllByOrderByCreatedAtDesc();
+    
+    List<Occurrence> findAllByIsActiveTrueOrderByCreatedAtDesc();
 }

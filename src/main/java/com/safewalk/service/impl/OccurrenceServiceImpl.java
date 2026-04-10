@@ -56,7 +56,7 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     @Override
     @Transactional(readOnly = true)
     public List<OccurrenceResponse> findAll() {
-        return occurrenceRepository.findAllByOrderByCreatedAtDesc()
+        return occurrenceRepository.findAllByIsActiveTrueOrderByCreatedAtDesc()
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -126,7 +126,19 @@ public class OccurrenceServiceImpl implements OccurrenceService {
                 .userId(occurrence.getUser().getId())
                 .userName(occurrence.getAnonymous() ? "Anônimo" : occurrence.getUser().getName())
                 .createdAt(occurrence.getCreatedAt().format(FORMATTER))
+                .isActive(occurrence.getIsActive() != null ? occurrence.getIsActive() : false)
                 .build();
+    }
+
+    @Transactional
+    public OccurrenceResponse validateOccurrence(Long id) {
+        Occurrence occurrence = occurrenceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ocorrência não encontrada"));
+        
+        occurrence.setIsActive(true);
+        occurrence = occurrenceRepository.save(occurrence);
+        
+        return mapToResponse(occurrence);
     }
 
     @Override
@@ -134,7 +146,11 @@ public class OccurrenceServiceImpl implements OccurrenceService {
     public List<HotspotDTO> getHotspots() {
         List<OccurrenceResponse> allResponses = findAll();
         List<HotspotDTO> hotspots = new ArrayList<>();
-        List<OccurrenceResponse> available = new ArrayList<>(allResponses);
+        
+        // Filter out occurrences with missing coordinates to prevent NullPointerException
+        List<OccurrenceResponse> available = allResponses.stream()
+                .filter(occ -> occ.getLatitude() != null && occ.getLongitude() != null)
+                .collect(Collectors.toList());
 
         while (!available.isEmpty()) {
             OccurrenceResponse current = available.remove(0);
