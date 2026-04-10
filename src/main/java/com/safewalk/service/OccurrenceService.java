@@ -1,5 +1,6 @@
 package com.safewalk.service;
 
+import com.safewalk.dto.HotspotDTO;
 import com.safewalk.dto.OccurrenceRequest;
 import com.safewalk.dto.OccurrenceResponse;
 
@@ -17,4 +18,6 @@ public interface OccurrenceService {
     void delete(Long id, Long userId);
 
     OccurrenceResponse update(Long id, OccurrenceRequest request, Long userId);
+
+    List<HotspotDTO> getHotspots();
 }
