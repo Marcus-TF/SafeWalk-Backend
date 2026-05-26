@@ -3,6 +3,7 @@ package com.safewalk.service.impl;
 import com.safewalk.dto.HotspotDTO;
 import com.safewalk.dto.OccurrenceRequest;
 import com.safewalk.dto.OccurrenceResponse;
+import com.safewalk.exception.DuplicateOccurrenceException;
 import com.safewalk.exception.ResourceNotFoundException;
 import com.safewalk.exception.UnauthorizedException;
 import com.safewalk.model.Occurrence;
@@ -36,6 +37,15 @@ public class OccurrenceServiceImpl implements OccurrenceService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
+        List<Occurrence> userOccurrences = occurrenceRepository.findByUserId(userId);
+        for (Occurrence occ : userOccurrences) {
+            if (occ.getLatitude() != null && occ.getLongitude() != null) {
+                double dist = haversineDistance(request.getLatitude(), request.getLongitude(), occ.getLatitude(), occ.getLongitude());
+                if (dist <= 0.2) {
+                    throw new DuplicateOccurrenceException("Você já possui um registro nesta região. Para sua segurança e controle de dados, não é permitido inserir múltiplos registros na mesma área.");
+                }
+            }
+        }
 
         Occurrence occurrence = Occurrence.builder()
                 .type(OccurrenceEnum.fromDescription(request.getType()))
@@ -101,6 +111,16 @@ public class OccurrenceServiceImpl implements OccurrenceService {
 
         if (!occurrence.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("Sem permissão");
+        }
+
+        List<Occurrence> userOccurrences = occurrenceRepository.findByUserId(userId);
+        for (Occurrence occ : userOccurrences) {
+            if (!occ.getId().equals(id) && occ.getLatitude() != null && occ.getLongitude() != null) {
+                double dist = haversineDistance(request.getLatitude(), request.getLongitude(), occ.getLatitude(), occ.getLongitude());
+                if (dist <= 0.2) {
+                    throw new DuplicateOccurrenceException("Você já possui um registro nesta região. Para sua segurança e controle de dados, não é permitido inserir múltiplos registros na mesma área.");
+                }
+            }
         }
 
         occurrence.setType(OccurrenceEnum.fromDescription(request.getType()));
