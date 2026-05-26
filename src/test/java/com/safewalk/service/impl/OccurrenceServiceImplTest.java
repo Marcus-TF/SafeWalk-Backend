@@ -3,6 +3,7 @@ package com.safewalk.service.impl;
 import com.safewalk.dto.HotspotDTO;
 import com.safewalk.dto.OccurrenceRequest;
 import com.safewalk.dto.OccurrenceResponse;
+import com.safewalk.exception.DuplicateOccurrenceException;
 import com.safewalk.exception.ResourceNotFoundException;
 import com.safewalk.exception.UnauthorizedException;
 import com.safewalk.model.Occurrence;
@@ -86,6 +87,7 @@ public class OccurrenceServiceImplTest {
     @Test
     void create_WithValidRequestAndUser_ShouldReturnOccurrenceResponse() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(occurrenceRepository.findByUserId(1L)).thenReturn(Collections.emptyList());
         when(occurrenceRepository.save(any(Occurrence.class))).thenReturn(occurrence);
 
         OccurrenceResponse response = occurrenceService.create(occurrenceRequest, 1L);
@@ -165,6 +167,7 @@ public class OccurrenceServiceImplTest {
     @Test
     void update_WithValidRequestAndAuthorizedUser_ShouldUpdateOccurrence() {
         when(occurrenceRepository.findById(100L)).thenReturn(Optional.of(occurrence));
+        when(occurrenceRepository.findByUserId(1L)).thenReturn(Collections.emptyList());
         when(occurrenceRepository.save(any(Occurrence.class))).thenReturn(occurrence);
 
         occurrenceRequest.setDescription("New description");
@@ -223,6 +226,26 @@ public class OccurrenceServiceImplTest {
 
         assertNotNull(hotspots);
         assertTrue(hotspots.isEmpty());
+    }
+
+    @Test
+    void create_WithDuplicateOccurrenceInRadius_ShouldThrowDuplicateOccurrenceException() {
+        Occurrence existing = createMockOccurrence(101L, -23.5505, -46.6333, "Alto");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(occurrenceRepository.findByUserId(1L)).thenReturn(Arrays.asList(existing));
+
+        assertThrows(DuplicateOccurrenceException.class, () -> occurrenceService.create(occurrenceRequest, 1L));
+        verify(occurrenceRepository, never()).save(any(Occurrence.class));
+    }
+
+    @Test
+    void update_WithDuplicateOccurrenceInRadius_ShouldThrowDuplicateOccurrenceException() {
+        Occurrence existing = createMockOccurrence(101L, -23.5505, -46.6333, "Alto");
+        when(occurrenceRepository.findById(100L)).thenReturn(Optional.of(occurrence));
+        when(occurrenceRepository.findByUserId(1L)).thenReturn(Arrays.asList(existing));
+
+        assertThrows(DuplicateOccurrenceException.class, () -> occurrenceService.update(100L, occurrenceRequest, 1L));
+        verify(occurrenceRepository, never()).save(any(Occurrence.class));
     }
 
     private Occurrence createMockOccurrence(Long id, double lat, double lon, String riskDesc) {
