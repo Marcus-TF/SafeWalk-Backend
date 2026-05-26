@@ -16,7 +16,6 @@ public class UserUpdateRequest {
     @Email(message = "Email inválido")
     private String email;
 
-    @Size(min = 6, message = "Senha deve ter no mínimo 6 caracteres")
     private String password;
 
     private Boolean notifyHigh;
