@@ -103,6 +103,37 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.11</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/safewalk/dto/**</exclude>
+                        <exclude>com/safewalk/model/**</exclude>
+                        <exclude>com/safewalk/config/**</exclude>
+                        <exclude>com/safewalk/exception/**</exclude>
+                        <exclude>com/safewalk/util/**</exclude>
+                        <exclude>com/safewalk/controller/**</exclude>
+                        <exclude>com/safewalk/security/**</exclude>
+                        <exclude>com/safewalk/SafeWalkApplication.class</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
