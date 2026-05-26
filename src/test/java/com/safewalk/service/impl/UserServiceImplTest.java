@@ -3,6 +3,7 @@ package com.safewalk.service.impl;
 import com.safewalk.dto.UserResponse;
 import com.safewalk.dto.UserUpdateRequest;
 import com.safewalk.exception.ResourceNotFoundException;
+import com.safewalk.exception.WeakPasswordException;
 import com.safewalk.model.PasswordResetToken;
 import com.safewalk.model.User;
 import com.safewalk.repository.PasswordResetTokenRepository;
@@ -63,7 +64,7 @@ public class UserServiceImplTest {
         updateRequest = new UserUpdateRequest();
         updateRequest.setName("Marcus Updated");
         updateRequest.setEmail("marcus.new@user.com");
-        updateRequest.setPassword("newSecurePassword");
+        updateRequest.setPassword("NewSecureP@ss123");
         updateRequest.setNotifyHigh(false);
         updateRequest.setNotifyMedium(true);
         updateRequest.setNotifyLow(false);
@@ -170,9 +171,9 @@ public class UserServiceImplTest {
         resetToken.setExpiresAt(LocalDateTime.now().plusMinutes(10));
 
         when(passwordResetTokenRepository.findByToken("validToken")).thenReturn(Optional.of(resetToken));
-        when(passwordEncoder.encode("newPassword")).thenReturn("newEncodedPassword");
+        when(passwordEncoder.encode("NewPassword@123")).thenReturn("newEncodedPassword");
 
-        userService.resetPassword("validToken", "newPassword");
+        userService.resetPassword("validToken", "NewPassword@123");
 
         assertEquals("newEncodedPassword", user.getPassword());
         verify(userRepository, times(1)).save(user);
@@ -188,7 +189,7 @@ public class UserServiceImplTest {
 
         when(passwordResetTokenRepository.findByToken("expiredToken")).thenReturn(Optional.of(resetToken));
 
-        assertThrows(RuntimeException.class, () -> userService.resetPassword("expiredToken", "newPassword"));
+        assertThrows(RuntimeException.class, () -> userService.resetPassword("expiredToken", "NewPassword@123"));
         verify(userRepository, never()).save(any(User.class));
     }
 
@@ -196,6 +197,19 @@ public class UserServiceImplTest {
     void resetPassword_WithInvalidToken_ShouldThrowRuntimeException() {
         when(passwordResetTokenRepository.findByToken("invalidToken")).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> userService.resetPassword("invalidToken", "newPassword"));
+        assertThrows(RuntimeException.class, () -> userService.resetPassword("invalidToken", "NewPassword@123"));
+    }
+
+    @Test
+    void resetPassword_WithWeakPassword_ShouldThrowWeakPasswordException() {
+        assertThrows(WeakPasswordException.class, () -> userService.resetPassword("validToken", "weak"));
+        verify(passwordResetTokenRepository, never()).findByToken(anyString());
+    }
+
+    @Test
+    void update_WithWeakPassword_ShouldThrowWeakPasswordException() {
+        updateRequest.setPassword("weak");
+        assertThrows(WeakPasswordException.class, () -> userService.update(1L, updateRequest));
+        verify(userRepository, never()).save(any(User.class));
     }
 }

@@ -4,6 +4,7 @@ import com.safewalk.dto.UserResponse;
 import com.safewalk.dto.UserUpdateRequest;
 import com.safewalk.exception.ResourceNotFoundException;
 import com.safewalk.exception.UnauthorizedException;
+import com.safewalk.exception.WeakPasswordException;
 import com.safewalk.model.PasswordResetToken;
 import com.safewalk.model.User;
 import com.safewalk.repository.PasswordResetTokenRepository;
@@ -49,6 +50,9 @@ public class UserServiceImpl implements UserService {
         user.setEmail(request.getEmail());
 
         if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            if (!request.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>\\-_]).{8,}$")) {
+                throw new WeakPasswordException("A nova senha deve ter no mínimo 8 caracteres, conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial");
+            }
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
@@ -98,6 +102,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public void resetPassword(String token, String newPassword) {
+        if (newPassword == null || !newPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>\\-_]).{8,}$")) {
+            throw new WeakPasswordException("A senha deve ter no mínimo 8 caracteres, conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial");
+        }
+
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Token inválido"));
 

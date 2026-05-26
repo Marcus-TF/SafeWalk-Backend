@@ -47,11 +47,11 @@ public class AuthServiceImplTest {
         signUpRequest = new SignUpRequest();
         signUpRequest.setName("Marcus Test");
         signUpRequest.setEmail("marcus@test.com");
-        signUpRequest.setPassword("securePassword");
+        signUpRequest.setPassword("SecureP@ss123");
 
         authRequest = new AuthRequest();
         authRequest.setEmail("marcus@test.com");
-        authRequest.setPassword("securePassword");
+        authRequest.setPassword("SecureP@ss123");
 
         user = User.builder()
                 .id(1L)
