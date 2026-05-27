@@ -15,7 +15,9 @@ import com.safewalk.repository.EmailActivationTokenRepository;
 import com.safewalk.security.JwtUtil;
 import com.safewalk.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -66,7 +69,11 @@ public class AuthServiceImpl implements AuthService {
         message.setTo(user.getEmail());
         message.setSubject("Ativação de conta - SafeWalk");
         message.setText("Olá " + user.getName() + ",\n\nClique no link abaixo para ativar sua conta no SafeWalk:\n" + link);
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (MailException e) {
+            log.info("Erro ao tentar enviar e-mail ao usuário.");
+        }
 
         UserResponse userResponse = UserResponse.builder()
                 .id(user.getId())
