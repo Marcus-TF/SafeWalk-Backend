@@ -45,6 +45,12 @@ public class User {
     @Column(name = "NOTIFY_LOW", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean notifyLow;
 
+    @Column(name = "is_active", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isActive;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Occurrence> occurrences;
 
@@ -54,8 +60,9 @@ public class User {
         updatedAt = LocalDateTime.now();
 
         if (notifyHigh == null) notifyHigh = false;
-        if (notifyMedium == null) notifyMedium = false;
+        if (notifyMedium == null) notifyMedium = true;
         if (notifyLow == null) notifyLow = false;
+        if (isActive == null) isActive = true;
     }
 
     @PreUpdate

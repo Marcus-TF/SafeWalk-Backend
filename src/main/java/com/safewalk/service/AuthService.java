@@ -9,4 +9,6 @@ public interface AuthService {
     AuthResponse signup(SignUpRequest request);
 
     AuthResponse login(AuthRequest request);
+
+    void activateAccount(String token);
 }

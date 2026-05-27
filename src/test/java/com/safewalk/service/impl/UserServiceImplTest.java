@@ -129,11 +129,16 @@ public class UserServiceImplTest {
 
     @Test
     void delete_WithValidId_ShouldDeleteUser() {
+        user.setIsActive(true);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         userService.delete(1L);
 
-        verify(userRepository, times(1)).deleteById(1L);
+        assertFalse(user.getIsActive());
+        assertNotNull(user.getDeletedAt());
+        assertTrue(user.getEmail().contains("_deleted_"));
+        verify(userRepository, times(1)).save(user);
+        verify(userRepository, never()).deleteById(anyLong());
     }
 
     @Test
@@ -142,6 +147,24 @@ public class UserServiceImplTest {
 
         assertThrows(ResourceNotFoundException.class, () -> userService.delete(99L));
         verify(userRepository, never()).deleteById(anyLong());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void findById_WithDeletedUser_ShouldThrowResourceNotFoundException() {
+        user.setDeletedAt(LocalDateTime.now());
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.findById(1L));
+    }
+
+    @Test
+    void update_WithDeletedUser_ShouldThrowResourceNotFoundException() {
+        user.setDeletedAt(LocalDateTime.now());
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.update(1L, updateRequest));
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test

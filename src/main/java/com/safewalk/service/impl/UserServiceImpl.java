@@ -38,13 +38,17 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponse findById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
+        User user = userRepository.findById(userId)
+                .filter(u -> u.getDeletedAt() == null)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
         return mapToResponse(user);
     }
 
     @Override
     public void update(Long id, UserUpdateRequest request) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        User user = userRepository.findById(id)
+                .filter(u -> u.getDeletedAt() == null)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -65,13 +69,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        User user = userRepository.findById(id)
+                .filter(u -> u.getDeletedAt() == null)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         if (!user.getId().equals(id)) {
             throw new UnauthorizedException("Você não tem permissão para deletar este Usuario");
         }
 
-        userRepository.deleteById(id);
+        user.setIsActive(false);
+        user.setDeletedAt(LocalDateTime.now());
+        user.setEmail(user.getEmail() + "_deleted_" + System.currentTimeMillis());
+        userRepository.save(user);
     }
 
     public void requestReset(String email) {
