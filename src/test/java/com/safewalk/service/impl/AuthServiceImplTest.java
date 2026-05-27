@@ -83,7 +83,7 @@ public class AuthServiceImplTest {
 
     @Test
     void signup_WithValidRequest_ShouldReturnAuthResponse() {
-        when(userRepository.existsByEmail(signUpRequest.getEmail())).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase(signUpRequest.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(signUpRequest.getPassword())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -101,7 +101,7 @@ public class AuthServiceImplTest {
 
     @Test
     void signup_WithExistingEmail_ShouldThrowEmailAlreadyExistsException() {
-        when(userRepository.existsByEmail(signUpRequest.getEmail())).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase(signUpRequest.getEmail())).thenReturn(true);
 
         assertThrows(EmailAlreadyExistsException.class, () -> authService.signup(signUpRequest));
         verify(userRepository, never()).save(any(User.class));
@@ -109,7 +109,7 @@ public class AuthServiceImplTest {
 
     @Test
     void login_WithValidCredentials_ShouldReturnAuthResponse() {
-        when(userRepository.findByEmail(authRequest.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(authRequest.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(authRequest.getPassword(), user.getPassword())).thenReturn(true);
         when(jwtUtil.generateToken(user.getId(), user.getEmail())).thenReturn("jwt-token");
 
@@ -119,13 +119,13 @@ public class AuthServiceImplTest {
         assertEquals("jwt-token", response.getToken());
         assertEquals(user.getId(), response.getUser().getId());
         assertEquals(user.getEmail(), response.getUser().getEmail());
-        verify(userRepository, times(1)).findByEmail(authRequest.getEmail());
+        verify(userRepository, times(1)).findByEmailIgnoreCase(authRequest.getEmail());
     }
 
     @Test
     void login_WithInactiveUser_ShouldThrowInactiveUserException() {
         user.setIsActive(false);
-        when(userRepository.findByEmail(authRequest.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(authRequest.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(authRequest.getPassword(), user.getPassword())).thenReturn(true);
 
         assertThrows(InactiveUserException.class, () -> authService.login(authRequest));
@@ -134,14 +134,14 @@ public class AuthServiceImplTest {
     @Test
     void login_WithDeletedUser_ShouldThrowInvalidCredentialsException() {
         user.setDeletedAt(LocalDateTime.now());
-        when(userRepository.findByEmail(authRequest.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(authRequest.getEmail())).thenReturn(Optional.of(user));
 
         assertThrows(InvalidCredentialsException.class, () -> authService.login(authRequest));
     }
 
     @Test
     void login_WithNonExistingEmail_ShouldThrowInvalidCredentialsException() {
-        when(userRepository.findByEmail(authRequest.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(authRequest.getEmail())).thenReturn(Optional.empty());
 
         assertThrows(InvalidCredentialsException.class, () -> authService.login(authRequest));
         verify(passwordEncoder, never()).matches(anyString(), anyString());
@@ -149,7 +149,7 @@ public class AuthServiceImplTest {
 
     @Test
     void login_WithIncorrectPassword_ShouldThrowInvalidCredentialsException() {
-        when(userRepository.findByEmail(authRequest.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(authRequest.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(authRequest.getPassword(), user.getPassword())).thenReturn(false);
 
         assertThrows(InvalidCredentialsException.class, () -> authService.login(authRequest));

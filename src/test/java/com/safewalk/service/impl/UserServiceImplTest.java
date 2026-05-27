@@ -169,7 +169,7 @@ public class UserServiceImplTest {
 
     @Test
     void requestReset_WithValidEmail_ShouldCreateTokenAndSendEmail() {
-        when(userRepository.findByEmail("marcus@user.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("marcus@user.com")).thenReturn(Optional.of(user));
 
         userService.requestReset("marcus@user.com");
 
@@ -179,7 +179,7 @@ public class UserServiceImplTest {
 
     @Test
     void requestReset_WithInvalidEmail_ShouldThrowResourceNotFoundException() {
-        when(userRepository.findByEmail("invalid@user.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase("invalid@user.com")).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> userService.requestReset("invalid@user.com"));
         verify(passwordResetTokenRepository, never()).save(any(PasswordResetToken.class));
