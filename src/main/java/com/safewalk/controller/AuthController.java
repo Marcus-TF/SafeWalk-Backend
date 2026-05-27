@@ -6,6 +6,7 @@ import com.safewalk.dto.SignUpRequest;
 import com.safewalk.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthServiceImpl authService;
+
+    @Value("${app.expo.mock:false}")
+    private boolean isExpoMock;
+
+    @Value("${app.expo.url:exp://localhost:8081/--/}")
+    private String expoUrl;
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@RequestBody SignUpRequest request) {
@@ -38,14 +45,17 @@ public class AuthController {
     public ResponseEntity<Void> activate(@RequestParam String token) {
         try {
             authService.activateAccount(token);
+            String redirectUrl = isExpoMock ? (expoUrl + "activate?status=success") : "safewalk://activate?status=success";
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .header("Location", "safewalk://activate?status=success")
+                    .header("Location", redirectUrl)
                     .build();
         } catch (Exception e) {
             String encodedMessage = java.net.URLEncoder.encode(e.getMessage(), java.nio.charset.StandardCharsets.UTF_8);
+            String redirectUrl = isExpoMock ? (expoUrl + "activate?status=error&message=" + encodedMessage) : ("safewalk://activate?status=error&message=" + encodedMessage);
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .header("Location", "safewalk://activate?status=error&message=" + encodedMessage)
+                    .header("Location", redirectUrl)
                     .build();
         }
     }
 }
+
