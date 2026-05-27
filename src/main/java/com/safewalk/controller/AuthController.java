@@ -23,10 +23,10 @@ public class AuthController {
 
     private final AuthServiceImpl authService;
 
-    @Value("${app.expo.mock:false}")
+    @Value("${app.expo.mock}")
     private boolean isExpoMock;
 
-    @Value("${app.expo.url:exp://localhost:8081/--/}")
+    @Value("${app.expo.url}")
     private String expoUrl;
 
     @PostMapping("/signup")

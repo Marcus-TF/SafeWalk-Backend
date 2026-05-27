@@ -14,10 +14,10 @@ public class BrevoMailConfig {
     @Value("${brevo.api.key:}")
     private String apiKey;
 
-    @Value("${brevo.sender.email:no-reply@safewalk.com}")
+    @Value("${brevo.sender.email}")
     private String senderEmail;
 
-    @Value("${brevo.sender.name:SafeWalk}")
+    @Value("${brevo.sender.name}")
     private String senderName;
 
     @Value("${spring.mail.host:}")
