@@ -26,142 +26,154 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.count() > 0) {
-            return;
+        User joao = userRepository.findByEmail("joao@test.com")
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .name("João Silva")
+                        .email("joao@test.com")
+                        .password(passwordEncoder.encode("123456"))
+                        .isActive(true)
+                        .build()));
+
+        User maria = userRepository.findByEmail("Marcust.mpf@gmail.com")
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .name("Marcus Túlio")
+                        .email("Marcust.mpf@gmail.com")
+                        .password(passwordEncoder.encode("123456"))
+                        .isActive(true)
+                        .build()));
+
+        User pedro = userRepository.findByEmail("pedro@test.com")
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .name("Pedro Oliveira")
+                        .email("pedro@test.com")
+                        .password(passwordEncoder.encode("123456"))
+                        .isActive(true)
+                        .build()));
+
+        if (occurrenceRepository.count() == 0) {
+            Occurrence occ1 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Assalto"))
+                    .description("Assalto à mão armada em frente ao mercado")
+                    .latitude(-3.7319)
+                    .longitude(-38.5267)
+                    .location("Centro - Praça do Ferreira")
+                    .risk(RiskLevelEnum.fromDescription("Alto"))
+                    .user(joao)
+                    .anonymous(false)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ2 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Assalto"))
+                    .description("Assalto na calçada")
+                    .latitude(-3.7315)
+                    .longitude(-38.5265)
+                    .location("Centro - Praça do Ferreira")
+                    .risk(RiskLevelEnum.fromDescription("Alto"))
+                    .user(maria)
+                    .anonymous(false)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ3 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Assalto"))
+                    .description("Assalto em frente à farmácia")
+                    .latitude(-3.7321)
+                    .longitude(-38.5269)
+                    .location("Centro - Praça do Ferreira")
+                    .risk(RiskLevelEnum.fromDescription("Alto"))
+                    .user(pedro)
+                    .anonymous(false)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ4 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Furto"))
+                    .description("Furto de celular no transporte público")
+                    .latitude(-3.7436)
+                    .longitude(-38.5370)
+                    .location("Benfica - Terminal do Benfica")
+                    .risk(RiskLevelEnum.fromDescription("Médio"))
+                    .user(joao)
+                    .anonymous(true)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ5 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Vandalismo"))
+                    .description("Pichação e quebra de vidros")
+                    .latitude(-3.7438)
+                    .longitude(-38.5372)
+                    .location("Benfica - Terminal do Benfica")
+                    .risk(RiskLevelEnum.fromDescription("Médio"))
+                    .user(maria)
+                    .anonymous(false)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ6 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Furto"))
+                    .description("Furto de bicicleta")
+                    .latitude(-3.7434)
+                    .longitude(-38.5368)
+                    .location("Benfica - Terminal do Benfica")
+                    .risk(RiskLevelEnum.fromDescription("Médio"))
+                    .user(pedro)
+                    .anonymous(true)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ7 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Iluminação Precária"))
+                    .description("Rua muito escura à noite")
+                    .latitude(-3.7250)
+                    .longitude(-38.5150)
+                    .location("Meireles - Rua dos Tabajaras")
+                    .risk(RiskLevelEnum.fromDescription("Baixo"))
+                    .user(joao)
+                    .anonymous(false)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ8 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Pessoa Suspeita"))
+                    .description("Pessoa suspeita rondando carros")
+                    .latitude(-3.7252)
+                    .longitude(-38.5152)
+                    .location("Meireles - Rua dos Tabajaras")
+                    .risk(RiskLevelEnum.fromDescription("Baixo"))
+                    .user(maria)
+                    .anonymous(false)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ9 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Iluminação Precária"))
+                    .description("Poste queimado")
+                    .latitude(-3.7248)
+                    .longitude(-38.5148)
+                    .location("Meireles - Rua dos Tabajaras")
+                    .risk(RiskLevelEnum.fromDescription("Baixo"))
+                    .user(pedro)
+                    .anonymous(true)
+                    .isActive(true)
+                    .build();
+
+            Occurrence occ10 = Occurrence.builder()
+                    .type(OccurrenceEnum.fromDescription("Iluminação Precária"))
+                    .description("Poste de luz queimado há semanas")
+                    .latitude(-3.7100)
+                    .longitude(-38.5500)
+                    .location("Monte Castelo")
+                    .risk(RiskLevelEnum.fromDescription("Baixo"))
+                    .user(joao)
+                    .anonymous(true)
+                    .isActive(true)
+                    .build();
+
+            occurrenceRepository.saveAll(Arrays.asList(
+                    occ1, occ2, occ3, occ4, occ5, occ6, occ7, occ8, occ9, occ10
+            ));
         }
-
-        User joao = User.builder()
-                .name("João Silva")
-                .email("joao@test.com")
-                .password(passwordEncoder.encode("123456"))
-                .build();
-
-        User maria = User.builder()
-                .name("Marcus Túlio")
-                .email("Marcust.mpf@gmail.com")
-                .password(passwordEncoder.encode("123456"))
-                .build();
-
-        User pedro = User.builder()
-                .name("Pedro Oliveira")
-                .email("pedro@test.com")
-                .password(passwordEncoder.encode("123456"))
-                .build();
-
-        List<User> users = userRepository.saveAll(Arrays.asList(joao, maria, pedro));
-
-        Occurrence occ1 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Assalto"))
-                .description("Assalto à mão armada em frente ao mercado")
-                .latitude(-3.7319)
-                .longitude(-38.5267)
-                .location("Centro - Praça do Ferreira")
-                .risk(RiskLevelEnum.fromDescription("Alto"))
-                .user(users.get(0))
-                .anonymous(false)
-                .build();
-
-        Occurrence occ2 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Furto"))
-                .description("Furto de celular no transporte público")
-                .latitude(-3.7436)
-                .longitude(-38.5370)
-                .location("Benfica - Terminal do Benfica")
-                .risk(RiskLevelEnum.fromDescription("Médio"))
-                .user(users.get(0))
-                .anonymous(true)
-                .build();
-
-        Occurrence occ3 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Iluminação Precária"))
-                .description("Rua muito escura à noite")
-                .latitude(-3.7250)
-                .longitude(-38.5150)
-                .location("Meireles - Rua dos Tabajaras")
-                .risk(RiskLevelEnum.fromDescription("Baixo"))
-                .user(users.get(0))
-                .anonymous(false)
-                .build();
-
-        Occurrence occ4 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Roubo de Veículo"))
-                .description("Carro roubado no estacionamento")
-                .latitude(-3.7340)
-                .longitude(-38.5400)
-                .location("Aldeota - Shopping Del Paseo")
-                .risk(RiskLevelEnum.fromDescription("Alto"))
-                .user(users.get(1))
-                .anonymous(true)
-                .build();
-
-        Occurrence occ5 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Vandalismo"))
-                .description("Pichação e quebra de vidros")
-                .latitude(-3.7170)
-                .longitude(-38.5430)
-                .location("Parquelândia")
-                .risk(RiskLevelEnum.fromDescription("Médio"))
-                .user(users.get(1))
-                .anonymous(false)
-                .build();
-
-        Occurrence occ6 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Assalto"))
-                .description("Assalto a pedestre na calçada")
-                .latitude(-3.7700)
-                .longitude(-38.5500)
-                .location("Messejana")
-                .risk(RiskLevelEnum.fromDescription("Alto"))
-                .user(users.get(1))
-                .anonymous(true)
-                .build();
-
-        Occurrence occ7 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Pessoa Suspeita"))
-                .description("Pessoa suspeita rondando carros")
-                .latitude(-3.7900)
-                .longitude(-38.6000)
-                .location("Jangurussu")
-                .risk(RiskLevelEnum.fromDescription("Baixo"))
-                .user(users.get(1))
-                .anonymous(false)
-                .build();
-
-        Occurrence occ8 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Furto"))
-                .description("Furto em residência durante o dia")
-                .latitude(-3.7650)
-                .longitude(-38.4900)
-                .location("Sapiranga")
-                .risk(RiskLevelEnum.fromDescription("Alto"))
-                .user(users.get(2))
-                .anonymous(true)
-                .build();
-
-        Occurrence occ9 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Assalto"))
-                .description("Tentativa de assalto frustrada")
-                .latitude(-3.7100)
-                .longitude(-38.5500)
-                .location("Monte Castelo")
-                .risk(RiskLevelEnum.fromDescription("Médio"))
-                .user(users.get(2))
-                .anonymous(false)
-                .build();
-
-        Occurrence occ10 = Occurrence.builder()
-                .type(OccurrenceEnum.fromDescription("Iluminação Precária"))
-                .description("Poste de luz queimado há semanas")
-                .latitude(-3.7350)
-                .longitude(-38.5200)
-                .location("Praia de Iracema")
-                .risk(RiskLevelEnum.fromDescription("Baixo"))
-                .user(users.get(2))
-                .anonymous(true)
-                .build();
-
-        occurrenceRepository.saveAll(Arrays.asList(
-                occ1, occ2, occ3, occ4, occ5, occ6, occ7, occ8, occ9, occ10
-        ));
     }
 }

@@ -25,6 +25,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(InactiveUserException.class)
+    public ResponseEntity<ErrorResponse> handleInactiveUser(InactiveUserException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(DuplicateOccurrenceException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateOccurrence(DuplicateOccurrenceException ex) {
         ErrorResponse error = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
