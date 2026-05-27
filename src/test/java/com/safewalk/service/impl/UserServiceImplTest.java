@@ -231,6 +231,7 @@ public class UserServiceImplTest {
 
     @Test
     void update_WithWeakPassword_ShouldThrowWeakPasswordException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         updateRequest.setPassword("weak");
         assertThrows(WeakPasswordException.class, () -> userService.update(1L, updateRequest));
         verify(userRepository, never()).save(any(User.class));
