@@ -100,12 +100,10 @@ public class UserServiceImpl implements UserService {
     }
 
     private void sendEmail(String to, String token) {
-        String link = frontUrl + "/reset-password?token=" + token;
-
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Redefinição de senha");
-        message.setText("Clique no link para redefinir sua senha:\n" + link);
+        message.setText("Insira o token no aplicativo para redefinir sua senha:\n" + token);
 
         mailSender.send(message);
     }
