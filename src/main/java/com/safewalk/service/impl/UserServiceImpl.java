@@ -103,7 +103,9 @@ public class UserServiceImpl implements UserService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Redefinição de senha");
-        message.setText("Insira o token no aplicativo para redefinir sua senha:\n" + token);
+        message.setText("Insira o token no aplicativo para redefinir sua senha.\n" +
+                        token +
+                        "\nTempo de Expiração: 30 minutos.");
 
         mailSender.send(message);
     }

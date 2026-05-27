@@ -67,8 +67,8 @@ public class AuthServiceImpl implements AuthService {
         String link = backendUrl + "/api/auth/activate?token=" + activationTokenValue;
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
-        message.setSubject("Ativação de conta - SafeWalk");
-        message.setText("Olá " + user.getName() + ",\n\nClique no link abaixo para ativar sua conta no SafeWalk:\n" + link);
+        message.setSubject("Ativação de conta - SafeZone");
+        message.setText("Olá " + user.getName() + ",\n\nClique no link abaixo para ativar sua conta no SafeZone:\n" + link);
         try {
             mailSender.send(message);
         } catch (MailException e) {
