@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-@Profile("dev")
+@Profile("prod")
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 
@@ -26,7 +26,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User joao = userRepository.findByEmail("joao@test.com")
+        User joao = userRepository.findByEmailIgnoreCase("joao@test.com")
                 .orElseGet(() -> userRepository.save(User.builder()
                         .name("João Silva")
                         .email("joao@test.com")
@@ -34,7 +34,7 @@ public class DataLoader implements CommandLineRunner {
                         .isActive(true)
                         .build()));
 
-        User maria = userRepository.findByEmail("Marcust.mpf@gmail.com")
+        User maria = userRepository.findByEmailIgnoreCase("Marcust.mpf@gmail.com")
                 .orElseGet(() -> userRepository.save(User.builder()
                         .name("Marcus Túlio")
                         .email("Marcust.mpf@gmail.com")
@@ -42,7 +42,7 @@ public class DataLoader implements CommandLineRunner {
                         .isActive(true)
                         .build()));
 
-        User pedro = userRepository.findByEmail("pedro@test.com")
+        User pedro = userRepository.findByEmailIgnoreCase("pedro@test.com")
                 .orElseGet(() -> userRepository.save(User.builder()
                         .name("Pedro Oliveira")
                         .email("pedro@test.com")

@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public AuthResponse signup(SignUpRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             throw new EmailAlreadyExistsException("Este e-mail já está cadastrado");
         }
 
@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(AuthRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmailIgnoreCase(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("E-mail ou senha incorretos"));
 
         if (user.getDeletedAt() != null) {
