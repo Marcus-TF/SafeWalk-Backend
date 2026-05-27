@@ -35,8 +35,17 @@ public class AuthController {
     }
 
     @GetMapping("/activate")
-    public ResponseEntity<String> activate(@RequestParam String token) {
-        authService.activateAccount(token);
-        return ResponseEntity.ok("Conta ativada com sucesso! Você já pode fazer login no aplicativo.");
+    public ResponseEntity<Void> activate(@RequestParam String token) {
+        try {
+            authService.activateAccount(token);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", "safewalk://activate?status=success")
+                    .build();
+        } catch (Exception e) {
+            String encodedMessage = java.net.URLEncoder.encode(e.getMessage(), java.nio.charset.StandardCharsets.UTF_8);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", "safewalk://activate?status=error&message=" + encodedMessage)
+                    .build();
+        }
     }
 }
